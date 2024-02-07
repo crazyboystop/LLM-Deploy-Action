@@ -58,7 +58,37 @@
 
 **备注**： Tensor Parallelism (TP), Pipeline Parallelism (PP), Continuous Batching (CB), Flash Attention (FA), Paged Attention(PA),  Fused MultiHeadAttention (FMHA), Token Attention (TA)
 
-
 通过上表可以看到，目前开源了非常多用于LLM推理部署的框架，其中使用较多的有：vLLM, TensorRT-LLM, JittorLM, LMDeploy, OpenLLM, MLC-LLM, AirLLM等。这些框架普遍使用了Attention加速技术、多种量化方法、Continuous Batching、张量并行等技术。
+
+# 显卡
+有了模型和推理矿框架，接下来就是部署时使用的硬件设备。因为LLM的计算需求，一般来说都是在GPU上部署LLM。目前市面上Nvidia、AMD、Apple和Intel几家出的GPU，但是应用最广泛的是Nvidia的GPU。
+
+**GPU有几个关键的参数需要关注：**
+
++** cuda core和tensor core**： 这两个概念是用在Nvidia的GPU上的，它们都是运算单元，主要的差异的算力大小。cuda core是全能型浮点运算单元，在Fermi架构之间被称为streaming processors；而tensor core是从Volta架构开始推出的专门用于矩阵运算的运算单元。在深度学习中，大部分的、耗时的运算都是矩阵相关的运算，特别是矩阵乘法，因此tensor core专门为矩阵运算进行了加速。
++ **显存大小**：显存的大小决定了GPU可以加载多少数据，当显存越大可以计算的数据就越多。
++ **显存带宽**：决定了GPU将数据从显存移动到计算核心的速度，速度越快完成某个运算的速度也更快。
++ **计算能力**：表示每秒的浮点运算量。根据数据的精度又分为双精度（fp64）、单精度（fp32）和半精度（fp16）浮点计算量，一般来说使用双精度浮点计算量来衡量算力。
+
+
+
+| 显卡      | 架构         | 显存（GB） | FP64 Tensor Cores（TFLOPS） | 带宽（TB/s） | TF32               | FP16               | BF16               | FP8                | INT8               | 连接                                                         |
+| --------- | ------------ | ---------- | --------------------------- | ------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------------------------------------------------ |
+| H200-SXM  | Hopper       | 141        | 67                          | 4.8          | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | [LINK](https://www.nvidia.com/zh-tw/data-center/h200/)       |
+| H100-NVL  | Hopper       | 188        | 134                         | 7.8          | :x:                | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | [LINK](https://www.nvidia.com/zh-tw/data-center/h100/)       |
+| A100-PCIe | Ampere       | 80         | 19.5                        | 1.935        | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x:                | :white_check_mark: | [LINK](https://www.nvidia.com/zh-tw/data-center/a100/)       |
+| V100-NVL  | Volta        | 32         | 7.8                         | 0.9          | :white_check_mark: | :white_check_mark: | :x:                | :x:                | :white_check_mark: | [LINK](https://www.nvidia.com/zh-tw/data-center/v100/)       |
+| V100-PCIE | Volta        | 32         | 7                           | 0.9          | :white_check_mark: | :white_check_mark: | :x:                | :x:                | :white_check_mark: | [LINK](https://www.nvidia.com/zh-tw/data-center/v100/)       |
+| RTX 3090  | Ampere       | 24         |                             |              | :x:                | :x:                | :x:                | :x:                | :x:                | [LINK](https://www.nvidia.cn/geforce/graphics-cards/30-series/rtx-3090-3090ti/) |
+| RTX 4090  | Ada Lovelace | 24         |                             |              | :x:                | :x:                | :x:                | :x:                | :x:                | [LINK](https://www.nvidia.cn/geforce/graphics-cards/40-series/rtx-4090-d/) |
+
+
+
+**参考资料：**
++ GPU核心指标：https://blog.csdn.net/chongbin007/article/details/123897149
++ cuda core和tensor core的区别：https://www.zhihu.com/question/451127498
++ 浮点计算能力：https://blog.csdn.net/zong596568821xp/article/details/103957058
++ 浮点计算能力：https://www.jishulink.com/post/1205946
++ 巅峰对决：英伟达 V100、A100/800、H100/800 GPU 对比: https://zhuanlan.zhihu.com/p/658054971
 
 
